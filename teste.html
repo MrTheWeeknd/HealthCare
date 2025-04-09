@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Google Fit - Passos (últimos 30 dias)</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px auto;
+      max-width: 800px;
+      padding: 0 20px;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    #signin {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f5f5f5;
+    }
+
+    canvas {
+      margin-top: 40px;
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Google Fit - Passos (últimos 30 dias)</h1>
+  <div id="signin"></div>
+
+  <div id="output">
+    <h2>Passos por dia</h2>
+    <table id="stepsTable">
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Passos</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <canvas id="stepsChart" height="100"></canvas>
+  </div>
+
+  <script>
+    const CLIENT_ID = '856832730537-rqc1lni9s73i2aq51ioida2djijhjl8b.apps.googleusercontent.com'; 
+
+    let accessToken = null;
+
+    function getMidnightUTC(daysAgo = 0) {
+      const date = new Date();
+      date.setUTCDate(date.getUTCDate() - daysAgo);
+      date.setUTCHours(0, 0, 0, 0);
+      return date.getTime();
+    }
+
+    function handleCredentialResponse(response) {
+      google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: 'https://www.googleapis.com/auth/fitness.activity.read https://www.googleapis.com/auth/fitness.heart_rate.read',
+        callback: (tokenResponse) => {
+          accessToken = tokenResponse.access_token;
+          fetchStepData();
+        }
+      }).requestAccessToken();
+    }
+
+    window.onload = () => {
+      google.accounts.id.initialize({
+        client_id: CLIENT_ID,
+        callback: handleCredentialResponse
+      });
+
+      google.accounts.id.renderButton(
+        document.getElementById("signin"),
+        { theme: "outline", size: "large" }
+      );
+    };
+
+    function fetchStepData() {
+      const endTimeMillis = getMidnightUTC(-0);
+      const startTimeMillis = getMidnightUTC(30);
+
+      fetch('https://www.googleapis.com/fitness/v1/users/me/dataset:aggregate', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          aggregateBy: [{ dataTypeName: "com.google.step_count.delta" }],
+          bucketByTime: { durationMillis: 86400000 },
+          startTimeMillis,
+          endTimeMillis
+        })
+      })
+      .then(res => res.json())
+      .then(data => displaySteps(data))
+      .catch(err => {
+        document.getElementById('output').innerHTML = 'Erro ao buscar dados: ' + err.message;
+      });
+    }
+
+    function fetchHeartRateData() {
+        const endTimeMillis = getMidnightUTC(-0);
+        const startTimeMillis = getMidnightUTC(30);
+
+        fetch('https://www.googleapis.com/fitness/v1/users/me/dataset:aggregate', {
+            method: 'POST',
+            headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+            aggregateBy: [{ dataTypeName: "com.google.heart_rate.bpm" }],
+            bucketByTime: { durationMillis: 86400000 },
+            startTimeMillis,
+            endTimeMillis
+            })
+        })
+        .then(res => res.json())
+        .then(data => displayHeartRate(data))
+        .catch(err => {
+            document.getElementById('heartrateOutput').innerText = 'Erro ao buscar frequência cardíaca: ' + err.message;
+        });
+    }
+
+    fetchHeartRateData();
+
+    function displaySteps(data) {
+      const tbody = document.querySelector('#stepsTable tbody');
+      const labels = [];
+      const values = [];
+
+      tbody.innerHTML = ""; // limpa
+
+      data.bucket.forEach(bucket => {
+        const date = new Date(Number(bucket.startTimeMillis));
+        date.setDate(date.getDate() + 1);
+        const dateStr = date.toLocaleDateString();
+
+        let steps = 0;
+        bucket.dataset?.forEach(ds => {
+          ds.point?.forEach(pt => {
+            steps += pt.value[0]?.intVal || 0;
+          });
+        });
+
+        labels.push(dateStr);
+        values.push(steps);
+
+        const row = document.createElement("tr");
+        row.innerHTML = `<td>${dateStr}</td><td>${steps}</td>`;
+        tbody.appendChild(row);
+      });
+
+      renderChart(labels, values);
+    }
+
+    function displayHeartRate(data) {
+        const tbody = document.querySelector('#heartRateTable tbody');
+        const labels = [];
+        const values = [];
+
+        tbody.innerHTML = "";
+
+        data.bucket.forEach(bucket => {
+            const date = new Date(Number(bucket.startTimeMillis));
+            date.setDate(date.getDate() + 1); // Ajuste de fuso
+            const dateStr = date.toLocaleDateString();
+
+            let bpm = 0;
+            let count = 0;
+
+            bucket.dataset?.forEach(ds => {
+            ds.point?.forEach(pt => {
+                if (pt.value[0]?.fpVal) {
+                bpm += pt.value[0].fpVal;
+                count++;
+                }
+            });
+            });
+
+            const avgBpm = count ? (bpm / count).toFixed(1) : '-';
+
+            labels.push(dateStr);
+            values.push(avgBpm === '-' ? null : Number(avgBpm));
+
+            const row = document.createElement("tr");
+            row.innerHTML = `<td>${dateStr}</td><td>${avgBpm}</td>`;
+            tbody.appendChild(row);
+        });
+
+        renderHeartChart(labels, values);
+    }
+
+
+    function renderChart(labels, values) {
+      const ctx = document.getElementById('stepsChart').getContext('2d');
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Passos por dia',
+            data: values,
+            backgroundColor: '#4caf50',
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: {
+              ticks: {
+                maxRotation: 90,
+                minRotation: 45
+              }
+            },
+            y: {
+              beginAtZero: true
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: (context) => `${context.parsed.y} passos`
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function renderHeartChart(labels, values) {
+        const ctx = document.getElementById('heartRateChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+            labels: labels,
+            datasets: [{
+                label: 'Frequência Cardíaca Média (bpm)',
+                data: values,
+                fill: false,
+                borderColor: '#f44336',
+                tension: 0.2
+            }]
+            },
+            options: {
+            responsive: true,
+            scales: {
+                y: {
+                beginAtZero: false,
+                suggestedMin: 40,
+                suggestedMax: 140
+                }
+            }
+            }
+        });
+    }
+
+  </script>
+
+    <h2>Frequência Cardíaca (média diária)</h2>
+    <table id="heartRateTable">
+        <thead>
+            <tr>
+            <th>Data</th>
+            <th>Batimentos por Minuto (bpm)</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <canvas id="heartRateChart" height="100"></canvas>
+
+</body>
+</html>
