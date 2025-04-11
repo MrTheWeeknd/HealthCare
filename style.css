@@ -1,75 +1,60 @@
+@import url(styles/alertaBatimento.css);
+@import url(styles/menuHamburguer.css);
+@import url(styles/informacoes.css);
+
+:root{
+  --cor-de-fundo: #f7f7f7;
+  --cor-da-fonte: #333;
+ 
+  --fonte-principal: "Poppins";
+  --fonte-secundaria: "Josefin Sans";
+}
+
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background: #f7f7f7;
-  }
-  
-  .container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 20px;
-    background: #fff;
-  }
-  
-  h1, h2 {
-    color: #333;
-    text-align: center;
-  }
-  
-  .filters {
-    text-align: center;
-    margin: 20px 0;
-  }
-  
-  .filter-btn {
-    margin: 0 5px;
-    padding: 10px 16px;
-    background-color: #1976d2;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .filter-btn:hover {
-    background-color: #1565c0;
-  }
-  
-  .today-data {
-    background: #e3f2fd;
-    border-left: 4px solid #2196f3;
-    padding: 10px 15px;
-    margin-bottom: 20px;
-    border-radius: 6px;
-  }
-  
-  canvas {
-    max-width: 100%;
-    margin: 20px auto;
-    display: block;
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 30px;
-  }
-  
-  th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
-  }
-  
-  th {
-    background-color: #eeeeee;
-  }
-  
-  #output {
-    margin-top: 20px;
-    color: red;
-    text-align: center;
-  }
-  
+  margin: 0;
+  padding: 0;
+  background: var(--cor-de-fundo);
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #fff;
+}
+
+h1.titulo{
+  margin-top: 10%;
+  margin-bottom: 5%;
+  width: 100%;
+  font-weight: 550;
+  font-family: var(--fonte-principal);
+}
+
+h1, h2 {
+  color: var(--cor-da-fonte);
+  text-align: center;
+}
+
+.filters {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.filter-btn {
+  margin: 0 5px;
+  padding: 10px 16px;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-family: var(--fonte-secundaria);
+}
+
+.filter-btn:hover {
+  background-color: #1565c0;
+}
+
+

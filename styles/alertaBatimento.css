@@ -1,0 +1,51 @@
+/* Alerta de batimentos */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .modal-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border: 2px solid #f44336;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 400px;
+    text-align: center;
+  }
+  
+  .modal-content h2 {
+    color: #f44336;
+  }
+  
+  .modal-content button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .modal-content button:hover {
+    background-color: #d32f2f;
+  }
+
+  @media screen and (min-width:1024px) {
+
+  }
+
+  @media screen and (min-width: 1728px){
+
+  }
+  
+  

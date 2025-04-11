@@ -1,0 +1,91 @@
+  .menu-icon {
+    width: 30px;
+    cursor: pointer;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1001;
+  }
+  
+  .menu-icon div {
+    height: 2px;
+    background: #1976d2;
+    margin: 6px 0;
+    transition: 0.4s;
+  }
+  
+  .menu-icon.active div:nth-child(1) {
+    transform: rotate(45deg) translate(6px, 6px);
+  }
+  
+  .menu-icon.active div:nth-child(2) {
+    opacity: 0;
+  }
+  
+  .menu-icon.active div:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+  }
+  
+  
+
+  #sideMenu {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    height: 100%;
+    width: 260px;
+    background: #ffffff;
+    border-right: 2px solid #ccc;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    transition: left 0.3s ease;
+    z-index: 999;
+  }
+  
+  #sideMenu.open {
+    left: 0;
+  }
+  
+  #sideMenu h2 {
+    margin-top: 0;
+    font-size: 1.2rem;
+    color: #333;
+  }
+  
+  #sideMenu label {
+    display: block;
+    margin-top: 20px;
+    font-weight: bold;
+  }
+  
+  #sideMenu input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+  
+  #sideMenu button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px;
+    background: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  #sideMenu button:hover {
+    background: #1565c0;
+  }
+  
+
+  @media screen and (min-width:1024px) {
+
+  }
+
+  @media screen and (min-width: 1728px){
+
+  }

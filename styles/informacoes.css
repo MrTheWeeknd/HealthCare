@@ -1,0 +1,49 @@
+.today-data {
+    background: #e3f2fd;
+    border-left: 4px solid #2196f3;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    font-family: var(--fonte-secundaria);
+  }
+  
+  canvas {
+    max-width: 100%;
+    margin: 20px auto;
+    display: block;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+
+  td{
+    font-family: var(--fonte-secundaria);
+  }
+  
+  th {
+    background-color: #eeeeee;
+  }
+  
+  #output {
+    margin-top: 20px;
+    color: red;
+    text-align: center;
+  }
+
+  .titulo__informacao{
+    font-family: var(--fonte-secundaria);
+    margin-top: 10% ;
+  }
+
+  .titulo__informacao__tabela{
+    font-family: var(--fonte-secundaria);
+  }
