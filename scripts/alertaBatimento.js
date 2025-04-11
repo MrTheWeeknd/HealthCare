@@ -4,27 +4,35 @@ const alertAudio = new Audio('https://actions.google.com/sounds/v1/alarms/alarm_
 
 function checkHeartRateAlert(avgToday) {
     const threshold = parseInt(localStorage.getItem('bpmThreshold')) || 85;
-  
+
     if (!alertPlayed && avgToday !== '-' && avgToday > threshold) {
-      // Mensagem no modal
-      document.getElementById('modalMessage').innerText =
-        `Sua frequência cardíaca média de hoje está em ${avgToday} bpm, acima do limite de ${threshold} bpm!`;
-      
-      // Exibe modal
-      document.getElementById('alertModal').style.display = 'block';
-  
-      // Vibração (caso disponível)
-      if (navigator.vibrate) {
-        navigator.vibrate([500, 200, 500]);
-      }
-  
-      // Som de alerta
-      alertAudio.play().catch(err => console.warn("Falha ao tocar som:", err));
-  
-      alertPlayed = true; // evita repetir
+        // Mensagem no modal
+        document.getElementById('modalMessage').innerText =
+            `Sua frequência cardíaca média de hoje está em ${avgToday} bpm, acima do limite de ${threshold} bpm!`;
+
+        // Toca o som de alerta
+        alertAudio.play();
+        alertPlayed = true;
+
+        // Exibe o modal
+        const modal = document.getElementById('alertModal');
+        if (modal) {
+            modal.style.display = 'block';
+        }
+
+        // Notificação do navegador
+        if (Notification.permission === "granted") {
+            new Notification("⚠️ Alerta de batimento elevado", {
+                body: `Sua média de batimentos está em ${avgToday} BPM.`,
+            });
+        } else if (Notification.permission !== "denied") {
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    new Notification("⚠️ Alerta de batimento elevado", {
+                        body: `Sua média de batimentos está em ${avgToday} BPM.`,
+                    });
+                }
+            });
+        }
     }
-  }
-  
-  document.getElementById('closeModal').addEventListener('click', () => {
-    document.getElementById('alertModal').style.display = 'none';
-  });
+}
