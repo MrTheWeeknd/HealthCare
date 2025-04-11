@@ -6,11 +6,19 @@
     border-radius: 6px;
     font-family: var(--fonte-secundaria);
   }
+
+  section.today-data p{
+    margin: 3% 0% 3% 0;
+  }
   
   canvas {
     max-width: 100%;
     margin: 20px auto;
     display: block;
+  }
+
+  #stepsChart, #heartRateChart{
+    margin: 3% 0% 7% 0;
   }
   
   table {
@@ -46,4 +54,5 @@
 
   .titulo__informacao__tabela{
     font-family: var(--fonte-secundaria);
+    padding: 4px 0px 3px 0px; 
   }
